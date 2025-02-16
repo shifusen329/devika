@@ -24,14 +24,19 @@ const getApiBaseUrl = () => {
 };
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || getApiBaseUrl();
+console.log('API Base URL:', API_BASE_URL);
 export const socket = io(API_BASE_URL, { autoConnect: false });
 
 export async function checkServerStatus() {
-  try{await fetch(`${API_BASE_URL}/api/status`) ; return true;}
-  catch (error) {
+  try {
+    console.log('Checking server status at:', `${API_BASE_URL}/api/status`);
+    const response = await fetch(`${API_BASE_URL}/api/status`);
+    console.log('Server status response:', response);
+    return true;
+  } catch (error) {
+    console.error('Server status check failed:', error);
     return false;
   }
-
 }
 
 export async function fetchInitialData() {

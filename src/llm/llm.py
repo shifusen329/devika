@@ -67,8 +67,11 @@ class LLM:
             ],
             
         }
-        if ollama.client:
-            self.models["OLLAMA"] = [(model["name"], model["name"]) for model in ollama.models]
+        if ollama.client and ollama.models:
+            try:
+                self.models["OLLAMA"] = [(model.get("model", ""), model.get("model", "")) for model in ollama.models]
+            except:
+                self.models["OLLAMA"] = []
 
     def list_models(self) -> dict:
         return self.models

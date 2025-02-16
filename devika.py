@@ -26,13 +26,10 @@ from src.llm import LLM
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": # Change the origin to your frontend URL
-                             [
-                                 "https://localhost:3000",
-                                 "http://localhost:3000",
-                                 ]}}) 
+app.config['CORS_ORIGINS'] = ["http://localhost:3002"]
+CORS(app, resources={r"/*": {"origins": app.config['CORS_ORIGINS']}})
 app.register_blueprint(project_bp)
-socketio.init_app(app)
+socketio.init_app(app, cors_allowed_origins="http://localhost:3002")
 
 
 log = logging.getLogger("werkzeug")
@@ -202,8 +199,12 @@ def get_settings():
 @app.route("/api/status", methods=["GET"])
 @route_logger(logger)
 def status():
+    print("Status endpoint hit from:", request.remote_addr)
+    print("Request headers:", dict(request.headers))
     return jsonify({"status": "server is running!"})
 
 if __name__ == "__main__":
     logger.info("Devika is up and running!")
+    print("Server starting on http://0.0.0.0:1337")
+    print("CORS origins:", app.config['CORS_ORIGINS'] if 'CORS_ORIGINS' in app.config else "Not configured")
     socketio.run(app, debug=False, port=1337, host="0.0.0.0")
